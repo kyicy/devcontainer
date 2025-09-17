@@ -31,4 +31,5 @@ jobs:
       # Build and push the Docker image for both architectures
       - name: Build and push Docker image
         run: |
-          docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/${{ github.repository_owner }}/devcontainer:${{ github.ref }} --push .
+          IMAGE_TAG="ghcr.io/${{ github.repository_owner }}/devcontainer:${{ github.ref_name }}"  # Using the branch name or tag
+          docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE_TAG --push .
