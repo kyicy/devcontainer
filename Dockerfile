@@ -1,4 +1,4 @@
-FROM debian:bookworm
+FROM debian:bookworm-slim
 
 LABEL org.opencontainers.image.source=https://github.com/kyicy/devcontainer
 LABEL org.opencontainers.image.description="my vscode devcontainer"
@@ -33,6 +33,7 @@ RUN apt-get update && apt-get install -y -q --no-install-recommends \
     zip unzip \
     tar \
     zsh \
+    pigz \
     && rm -rf /var/lib/apt/lists/*
 
 
