@@ -87,7 +87,9 @@ RUN curl -fSL "https://golang.google.cn/dl/go${GOLANG_VERSION}.linux-amd64.tar.g
     && rm go.tar.gz
 
 
-RUN curl -s "https://get.sdkman.io" | bash && sdk install java 24-open && sdk install kotlin
+RUN curl -s "https://get.sdkman.io" | bash 
+RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && \
+    sdk install java 24-open && sdk install kotlin
 
 
 
