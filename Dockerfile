@@ -27,8 +27,7 @@ RUN apt-get update && apt-get install -y -q --no-install-recommends \
     apt-transport-https \
     build-essential \
     ca-certificates \
-    curl \
-    git \
+    curl git mercurial make binutils bison gcc \
     libssl-dev \
     wget \
     zip unzip \
