@@ -7,10 +7,9 @@ on:
     branches:
       - main  # Trigger on pushes to the `main` branch
   workflow_dispatch:
-  
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     permissions:
       contents: read
@@ -39,10 +38,10 @@ jobs:
             TAGS="${IMAGE_NAME}:latest"
           fi
           echo "IMAGE_TAGS=$TAGS" >> $GITHUB_ENV
-
       - name: Build and push Docker image
-        run: |
-          docker buildx build \
-            --platform linux/amd64,linux/arm64 \
-            --tag ${{ env.IMAGE_TAGS }} \
-            --push .
+        uses: docker/build-push-action@v4
+        with:
+          context: .  # Path to the Dockerfile
+          push: true  # Push the image to the registry
+          tags: ${{ env.IMAGE_TAGS }}
+          platforms: linux/amd64,linux/arm64  # Multi-architecture platforms
