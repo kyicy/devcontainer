@@ -82,7 +82,7 @@ EOF
 # Install golang
 ENV GOPROXY="https://goproxy.cn,direct"
 RUN curl -s -S -L "https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer" | bash
-RUN /bin/bash -c "source /root/.gvm/scripts/gvm; gvm install -B go1.25.1; gvm use go1.25.1 --default"
+RUN /bin/bash -c "source /root/.gvm/scripts/gvm; gvm install go1.21.0 -B; gvm use go1.21.0; gvm install go1.25.1; gvm use go1.25.1 --default"
 
 RUN curl -s "https://get.sdkman.io" | bash
 RUN /bin/bash -c "source /root/.sdkman/bin/sdkman-init.sh; sdk version; sdk install kotlin; sdk install java"
