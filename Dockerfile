@@ -55,7 +55,7 @@ RUN curl https://gitee.com/mirrors/nvm/raw/master/install.sh | bash \
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 RUN mkdir -p /root/.config/uv \
     && echo '[[index]]' > /root/.config/uv/uv.toml \
-    && echo 'url = "https://mirrors.ustc.edu.cn/pypi/simple"' >> /root/.configuv/uv.toml \
+    && echo 'url = "https://mirrors.ustc.edu.cn/pypi/simple"' >> /root/.config/uv/uv.toml \
     && echo 'default = true' >> /root/.config/uv/uv.toml
 
 # Install rust
