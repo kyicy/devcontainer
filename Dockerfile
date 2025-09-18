@@ -33,7 +33,6 @@ RUN apt-get update && apt-get install -y -q --no-install-recommends \
     zip unzip \
     tar \
     zsh \
-    pigz \
     && rm -rf /var/lib/apt/lists/*
 
 
