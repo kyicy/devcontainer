@@ -30,8 +30,19 @@ RUN apt-get update && apt-get install -y -q --no-install-recommends \
     tar \
     zsh \
     libicu-dev \
+    sudo \
     && rm -rf /var/lib/apt/lists/*
 
+
+# Create ubuntu user with sudo privileges
+RUN useradd -ms /bin/bash admin && \
+    usermod -aG sudo admin
+# New added for disable sudo password
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+USER admin
+WORKDIR /home/admin
+ENV HOME="/home/admin"
 
 # oh my zsh
 RUN git clone https://mirrors.tuna.tsinghua.edu.cn/git/ohmyzsh.git && cd ohmyzsh/tools && REMOTE=https://mirrors.tuna.tsinghua.edu.cn/git/ohmyzsh.git sh install.sh    
@@ -44,16 +55,16 @@ RUN curl https://gitee.com/mirrors/nvm/raw/master/install.sh | bash
 
 # Install uv
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-RUN mkdir -p /root/.config/uv \
-    && echo '[[index]]' > /root/.config/uv/uv.toml \
-    && echo 'url = "https://mirrors.ustc.edu.cn/pypi/simple"' >> /root/.config/uv/uv.toml \
-    && echo 'default = true' >> /root/.config/uv/uv.toml
+RUN mkdir -p $HOME/.config/uv \
+    && echo '[[index]]' > $HOME/.config/uv/uv.toml \
+    && echo 'url = "https://mirrors.ustc.edu.cn/pypi/simple"' >> $HOME/.config/uv/uv.toml \
+    && echo 'default = true' >> $HOME/.config/uv/uv.toml
 
 # Install rust
 ENV RUSTUP_DIST_SERVER="https://rsproxy.cn"
 ENV RUSTUP_UPDATE_ROOT="https://rsproxy.cn/rustup"
-RUN mkdir -p /root/.cargo && \
-    cat > /root/.cargo/config.toml << EOF
+RUN mkdir -p $HOME/.cargo && \
+    cat > $HOME/.cargo/config.toml << EOF
 [source.crates-io]
 replace-with = 'rsproxy-sparse'
 [source.rsproxy]
