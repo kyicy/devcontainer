@@ -83,7 +83,7 @@ ENV GVM_GO_BINARY_URL="https://mirrors.aliyun.com/golang/"
 ENV GVM_GO_SOURCE_URL="https://gitee.com/mirrors/go"
 RUN curl -s -S -L "https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer" | bash
 
-ENV PATH="$PATH:$HOME/.dotnet"
+ENV PATH="$PATH:$HOME/.dotnet:$HOME/.dotnet/tools"
 RUN curl -s https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash  -s -- --channel STS
 
 RUN curl -s "https://get.sdkman.io" | bash
