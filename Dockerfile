@@ -29,26 +29,18 @@ RUN apt-get update && apt-get install -y -q --no-install-recommends \
     zip unzip \
     tar \
     zsh \
+    libicu-dev \
     && rm -rf /var/lib/apt/lists/*
 
 
 # oh my zsh
 RUN git clone https://mirrors.tuna.tsinghua.edu.cn/git/ohmyzsh.git && cd ohmyzsh/tools && REMOTE=https://mirrors.tuna.tsinghua.edu.cn/git/ohmyzsh.git sh install.sh    
-
 ENV SHELL=/usr/bin/zsh
 
-
 ## nodejs
+# Install nvm
 ENV NVM_NODEJS_ORG_MIRROR="https://mirrors.ustc.edu.cn/node"
-ENV NODE_VERSION="24.7.0"
-
-# Install nvm with node and npm
-RUN curl https://gitee.com/mirrors/nvm/raw/master/install.sh | bash \
-    && . /root/.nvm/nvm.sh \
-    && nvm install $NODE_VERSION \
-    && nvm alias default $NODE_VERSION \
-    && nvm use default \
-    && npm config set registry https://registry.npmmirror.com
+RUN curl https://gitee.com/mirrors/nvm/raw/master/install.sh | bash
 
 # Install uv
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -60,7 +52,6 @@ RUN mkdir -p /root/.config/uv \
 # Install rust
 ENV RUSTUP_DIST_SERVER="https://rsproxy.cn"
 ENV RUSTUP_UPDATE_ROOT="https://rsproxy.cn/rustup"
-RUN curl --proto '=https' --tlsv1.2 -sSf https://rsproxy.cn/rustup-init.sh | bash -s -- -y
 RUN mkdir -p /root/.cargo && \
     cat > /root/.cargo/config.toml << EOF
 [source.crates-io]
@@ -77,10 +68,13 @@ EOF
 
 # Install golang
 ENV GOPROXY="https://goproxy.cn,direct"
+ENV GVM_GO_BINARY_URL="https://mirrors.aliyun.com/golang/"
+ENV GVM_GO_SOURCE_URL="https://gitee.com/mirrors/go"
 RUN curl -s -S -L "https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer" | bash
-RUN /bin/bash -c "source /root/.gvm/scripts/gvm; gvm install go1.25.1 -B; gvm use go1.25.1 --default"
+
+ENV PATH="$PATH:$HOME/.dotnet"
+RUN curl -s https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash  -s -- --channel STS
 
 RUN curl -s "https://get.sdkman.io" | bash
-RUN /bin/bash -c "source /root/.sdkman/bin/sdkman-init.sh; sdk version; sdk install kotlin; sdk install java"
 
-RUN curl -s https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash  -s -- --channel LTS
+
