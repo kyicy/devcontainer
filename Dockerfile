@@ -82,3 +82,5 @@ RUN /bin/bash -c "source /root/.gvm/scripts/gvm; gvm install go1.25.1 -B; gvm us
 
 RUN curl -s "https://get.sdkman.io" | bash
 RUN /bin/bash -c "source /root/.sdkman/bin/sdkman-init.sh; sdk version; sdk install kotlin; sdk install java"
+
+RUN curl -s https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash  -s -- --channel LTS
