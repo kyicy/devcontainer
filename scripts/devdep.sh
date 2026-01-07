@@ -1,6 +1,10 @@
-apt-get update
+#!/usr/bin/env bash
 
-apt-get install -y -q --no-install-recommends \
+set -e
+
+sudo apt-get update
+
+sudo apt-get install -y -q --no-install-recommends \
     build-essential \
     curl mercurial make binutils bison gcc bsdmainutils \
     libssl-dev \

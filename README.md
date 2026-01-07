@@ -79,17 +79,85 @@ services:
 - **Node.js/npm**：中科大镜像
 - **Python PyPI**：中科大镜像
 
+## 开发环境配置
+
+容器启动后，所有语言安装脚本位于 `$HOME/scripts` 目录。您可以根据项目需求自由选择和安装所需的开发工具。
+
+### ⚠️ 重要：执行顺序
+
+**在执行任何语言安装脚本之前，必须先运行 `devdep.sh` 安装系统依赖**，否则其他脚本可能会因缺少必要的编译工具而失败。
+
+```bash
+# 1️⃣ 首先，安装系统依赖（必须）
+bash ~/scripts/devdep.sh
+
+# 2️⃣ 然后，根据需要安装语言环境
+# 安装 Go
+bash ~/scripts/gvm.sh
+
+# 安装 Rust
+bash ~/scripts/rustup.sh
+
+# 安装 Node.js
+bash ~/scripts/nvm.sh
+
+# 安装 Python (uv)
+bash ~/scripts/uv.sh
+
+# 安装 .NET
+bash ~/scripts/dotnet.sh
+
+# 安装 Java (SDKMAN)
+bash ~/scripts/sdkman.sh
+```
+
+### 脚本说明
+
+| 脚本 | 说明 | 依赖 |
+|------|------|------|
+| **devdep.sh** | 系统基础依赖（build-essential、curl、wget 等） | 无（必须首先执行） |
+| **gvm.sh** | Go Version Manager | devdep.sh |
+| **rustup.sh** | Rust 工具链 | devdep.sh |
+| **nvm.sh** | Node Version Manager | 无 |
+| **uv.sh** | Python 包管理器 | 无 |
+| **dotnet.sh** | .NET SDK | 无 |
+| **sdkman.sh** | Java 工具链管理器 | 无 |
+
+### 自定义环境
+
+这种设计的优势在于：
+- ✅ **按需安装**：只安装项目真正需要的工具链
+- ✅ **版本灵活**：使用版本管理器，可以自由切换版本
+- ✅ **环境轻量**：避免预装所有工具导致的镜像膨胀
+- ✅ **更新及时**：随时可以安装最新版本
+
+**示例配置：**
+
+```bash
+# 对于 Go 项目
+bash ~/scripts/devdep.sh && bash ~/scripts/gvm.sh
+
+# 对于 Rust 项目
+bash ~/scripts/devdep.sh && bash ~/scripts/rustup.sh
+
+# 对于全栈项目
+bash ~/scripts/devdep.sh
+bash ~/scripts/gvm.sh
+bash ~/scripts/rustup.sh
+bash ~/scripts/nvm.sh
+```
+
 ## 环境变量
 
 容器预配置了以下环境变量：
 
 ```bash
 # Go 代理
-GOPROXY=https://goproxy.cn,direct
+GOPROXY=https://mirrors.aliyun.com/goproxy/,direct
 GO111MODULE=on
 
 # Rust 镜像
-RUSTUP_DIST_SERVER=https://rsproxy.cn/dist
+RUSTUP_DIST_SERVER=https://rsproxy.cn
 RUSTUP_UPDATE_ROOT=https://rsproxy.cn/rustup
 
 # Node.js 镜像
@@ -102,6 +170,20 @@ NVM_NODEJS_ORG_MIRROR=https://mirrors.ustc.edu.cn/npm/node-snapshot
 - **密码**：无（使用 SSH 密钥认证）
 - **权限**：sudo 免密
 - **Shell**：Zsh with Oh My Zsh
+
+> **⚠️ 安全性说明**
+>
+> 此容器配置了免密 sudo 权限，旨在为本地开发和 CI/CD 环境提供便利。这种配置存在以下安全风险：
+>
+> - **提权风险**：任何进程都可以无需密码即可获得 root 权限
+> - **不适用于生产环境**：切勿将此容器用于生产环境或对外暴露的服务
+> - **代码执行风险**：运行不受信任的代码时需格外谨慎
+>
+> **建议的安全实践**：
+> - 仅在受控的开发环境中使用
+> - 不要在容器中存储或处理敏感数据
+> - 定期更新镜像以获取安全补丁
+> - 考虑在需要时移除免密 sudo 配置
 
 ## 构建和发布
 
