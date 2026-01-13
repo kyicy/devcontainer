@@ -1,221 +1,293 @@
-# devcontainer
+# DevContainer 开发环境
 
-> 一个专为国内开发者优化的多功能开发环境容器
+一个为国内开发者优化的 DevContainer 解决方案，提供开箱即用的多语言开发环境。
 
-## 简介
+## 📦 项目组成
 
-这是一个标准化的多语言开发环境容器，提供了开箱即用的开发工具链。项目针对中国开发者进行了深度优化，使用国内镜像源，大幅提升包管理和依赖下载速度。
+本项目包含两个部分：
 
-## 特性
+### 1. DevContainer Docker 镜像
+基于 Debian Trixie 的开发容器镜像，预配置了完整的开发工具链。
 
-- 🚀 **开箱即用** - 预配置主流开发语言和工具
-- 🇨🇳 **国内优化** - 全链路使用国内镜像源（阿里云、清华、中科大等）
-- 🏗️ **多架构支持** - 支持 AMD64 和 ARM64 架构
-- 👤 **用户友好** - 预配置 admin 用户，免密 sudo，集成 Oh My Zsh
-- 🔄 **CI/CD 就绪** - 完整的 GitHub Actions 工作流
+### 2. devinit CLI 工具
+用于快速初始化项目 DevContainer 配置的命令行工具。
 
-## 支持的语言和环境
+---
 
-| 语言/工具 | 版本管理器 | 说明 |
-|----------|-----------|------|
-| **Go** | GVM | Go 版本管理，使用阿里云镜像 |
-| **Rust** | rustup | Rust 工具链，使用 rsproxy 镜像 |
-| **Node.js** | NVM | Node 版本管理，使用中科大镜像 |
-| **Python** | uv | 现代 Python 包管理器，使用中科大 PyPI 镜像 |
-| **.NET** | - | .NET SDK (STS channel) |
-| **Java** | SDKMAN | Java 工具链管理器 |
+## 🐳 Docker 镜像
 
-## 快速开始
+### 特性
 
-### VS Code Dev Containers
+- 🐧 **基础镜像**: Debian Trixie
+- 🇨🇳 **国内优化**: 预配置阿里云、清华大学等国内镜像源
+- 👤 **用户配置**: 预创建 `admin` 用户，配置免密 sudo
+- 🐚 **Shell 环境**: Oh My Zsh（清华大学镜像）
+- 🔧 **多语言支持**: Node.js、Go、Rust、Python、.NET、Java
 
-1. 安装 [Dev Containers 扩展](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
-2. 在项目根目录创建 `.devcontainer/devcontainer.json`：
+### 支持的开发环境
+
+| 语言/工具 | 安装脚本 | 镜像源 |
+|-----------|----------|--------|
+| **Node.js** | `nvm.sh` | 中科大镜像 |
+| **Go** | `gvm.sh` | 阿里云镜像 |
+| **Rust** | `rustup.sh` | rsproxy 国内镜像 |
+| **Python** | `uv.sh` | - |
+| **.NET** | `dotnet.sh` | - |
+| **Java** | `sdkman.sh` | - |
+
+### 构建镜像
+
+```bash
+docker build -t ghcr.io/kyicy/devcontainer:latest .
+```
+
+### 使用镜像
+
+在项目的 `.devcontainer/devcontainer.json` 中引用：
 
 ```json
 {
-  "image": "ghcr.io/kyicy/devcontainer:latest",
-  "remoteUser": "admin"
+  "image": "ghcr.io/kyicy/devcontainer:latest"
 }
 ```
 
-3. 按 `F1` 选择 `Dev Containers: Reopen in Container`
+---
 
-### GitHub Codespaces
+## 🚀 devinit CLI 工具
 
-直接使用此镜像作为 Codespaces 的基础镜像。
-
-### Docker 直接使用
+### 安装
 
 ```bash
-docker pull ghcr.io/kyicy/devcontainer:latest
-
-docker run -it --rm \
-  --cap-add=SYS_PTRACE \
-  --security-opt seccomp=unconfined \
-  -v $(pwd):/workspace \
-  ghcr.io/kyicy/devcontainer:latest
+cd devinit
+go build -o devinit
+sudo mv devinit /usr/local/bin/
 ```
 
-### Docker Compose
+### 功能
+
+#### 1. 初始化项目
+
+```bash
+# 交互式模式
+devinit init
+
+# 非交互模式
+devinit init --name myproject \
+  --git-user "Your Name" \
+  --git-email "you@example.com" \
+  --non-interactive
+```
+
+**生成的文件结构**：
+
+```
+.devcontainer/
+├── devcontainer.json          # DevContainer 配置
+├── docker-compose.yml         # Docker Compose 配置
+└── mapping/
+    ├── .cam/                  # Claude 配置映射
+    ├── .claude/               # Claude 数据映射
+    ├── devcontainer-dependencies  # 项目依赖安装脚本
+    ├── post-create.sh         # 容器创建后执行脚本
+    └── .zsh_history           # Zsh 历史记录映射
+```
+
+#### 2. 管理配置
+
+```bash
+# 查看配置
+devinit config view
+
+# 设置环境变量
+devinit config set-env NODE_ENV production
+
+# 添加 VS Code 扩展
+devinit config add-extension golang.go
+```
+
+### 命令参数
+
+#### init 命令
+
+| 参数 | 简写 | 默认值 | 说明 |
+|------|------|--------|------|
+| `--name` | `-n` | - | 项目名称 |
+| `--workspace` | `-w` | `/home/admin/gopath/src` | 工作目录 |
+| `--user` | `-u` | `admin` | 容器用户 |
+| `--git-email` | - | - | Git 邮箱 |
+| `--git-user` | - | - | Git 用户名 |
+| `--github-token` | - | - | GitHub Token |
+| `--git-branch` | - | `master` | Git 默认分支 |
+| `--github-proxy` | - | `http://host.docker.internal:7890` | GitHub 代理 |
+| `--non-interactive` | `-y` | `false` | 非交互模式 |
+
+---
+
+## 📁 项目结构
+
+```
+.
+├── Dockerfile              # Docker 镜像定义
+├── aliyun.sources          # 阿里云 APT 源配置
+├── cargo.toml              # Cargo 国内镜像配置
+├── scripts/                # 开发工具安装脚本
+│   ├── nvm.sh             # Node.js (nvm) 安装
+│   ├── gvm.sh             # Go (gvm) 安装
+│   ├── rustup.sh          # Rust 安装
+│   ├── uv.sh              # Python (uv) 安装
+│   ├── dotnet.sh          # .NET 安装
+│   ├── sdkman.sh          # Java (SDKMAN) 安装
+│   └── devdep.sh          # 系统依赖安装
+└── devinit/               # CLI 工具
+    ├── main.go            # 入口文件
+    ├── cmd/               # CLI 命令定义
+    │   ├── root.go        # 根命令
+    │   ├── init.go        # 初始化命令
+    │   └── config.go      # 配置管理命令
+    └── pkg/               # 核心逻辑包
+        ├── config/        # 配置读写
+        ├── generator/     # 文件生成器
+        └── util/          # 工具函数
+```
+
+---
+
+## 🌟 特色功能
+
+### 1. 国内镜像优化
+
+所有工具都配置了国内镜像源，确保快速下载：
+
+- **APT**: 阿里云镜像
+- **npm**: npmmirror 镜像
+- **Go**: 阿里云 goproxy
+- **Rust**: rsproxy 镜像
+- **Oh My Zsh**: 清华大学镜像
+
+### 2. GitHub 代理支持
+
+自动配置 GitHub 代理，解决访问问题：
+
+```bash
+# 默认代理配置
+git config --global http.https://github.com.proxy http://host.docker.internal:7890
+```
+
+### 3. GitHub 认证
+
+支持通过环境变量配置 GitHub Token：
+
+```bash
+devinit init --github-token your_token_here
+```
+
+### 4. 开箱即用
+
+容器启动后自动执行：
+
+- 修复文件权限
+- 配置 Git 用户信息
+- 安装系统依赖（首次）
+- 加载项目依赖配置
+
+---
+
+## 📝 使用示例
+
+### 初始化一个 Go 项目
+
+```bash
+# 1. 使用 devinit 初始化
+devinit init \
+  --name my-go-project \
+  --git-user "Your Name" \
+  --git-email "you@example.com"
+
+# 2. 添加 Go 相关扩展
+devinit config add-extension golang.go
+devinit config add-extension eamodio.gitlens
+
+# 3. 在 VS Code 中重新打开容器
+# 按 F1 -> "Dev Containers: Rebuild Container"
+```
+
+### 初始化一个全栈项目
+
+```bash
+devinit init \
+  --name fullstack-app \
+  --git-user "Your Name" \
+  --git-email "you@example.com"
+
+# 编辑 .devcontainer/mapping/devcontainer-dependencies
+# 取消注释所需的开发环境脚本
+```
+
+---
+
+## 🔧 配置文件说明
+
+### devcontainer.json
+
+主要配置文件，定义容器行为：
+
+```json
+{
+  "name": "Project Dev Container",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "project_dev",
+  "workspaceFolder": "/home/admin/gopath/src/project",
+  "postCreateCommand": "bash $HOME/scripts/post-create.sh",
+  "remoteUser": "admin",
+  "customizations": {
+    "vscode": {
+      "extensions": ["golang.go", "eamodio.gitlens"]
+    }
+  }
+}
+```
+
+### docker-compose.yml
+
+Docker Compose 配置，定义服务、卷、网络：
 
 ```yaml
 services:
-  dev:
+  project_dev:
     image: ghcr.io/kyicy/devcontainer:latest
     volumes:
-      - .:/workspace
-    working_dir: /workspace
-    command: /bin/zsh
+      - project_code:/home/admin/gopath
+      - ./mapping/.cam:/home/admin/.cam
+      # ... 更多映射
 ```
 
-## 镜像源配置
+### devcontainer-dependencies
 
-项目使用以下国内镜像源以提升访问速度：
-
-- **APT 包管理**：阿里云 Debian 镜像
-- **Go 模块**：阿里云 Go 代理 + Gitee 源
-- **Rust crates**：rsproxy.cn (字节跳动)
-- **Node.js/npm**：中科大镜像
-- **Python PyPI**：中科大镜像
-
-## 开发环境配置
-
-容器启动后，所有语言安装脚本位于 `$HOME/scripts` 目录。您可以根据项目需求自由选择和安装所需的开发工具。
-
-### ⚠️ 重要：执行顺序
-
-**在执行任何语言安装脚本之前，必须先运行 `devdep.sh` 安装系统依赖**，否则其他脚本可能会因缺少必要的编译工具而失败。
+项目特定的依赖安装脚本：
 
 ```bash
-# 1️⃣ 首先，安装系统依赖（必须）
-bash ~/scripts/devdep.sh
+#!/usr/bin/env bash
+set -e
 
-# 2️⃣ 然后，根据需要安装语言环境
-# 安装 Go
-bash ~/scripts/gvm.sh
+echo "🔧 安装项目所需的开发环境..."
 
-# 安装 Rust
-bash ~/scripts/rustup.sh
-
-# 安装 Node.js
+# === 前端开发 ===
 bash ~/scripts/nvm.sh
 
-# 安装 Python (uv)
-bash ~/scripts/uv.sh
-
-# 安装 .NET
-bash ~/scripts/dotnet.sh
-
-# 安装 Java (SDKMAN)
-bash ~/scripts/sdkman.sh
-```
-
-### 脚本说明
-
-| 脚本 | 说明 | 依赖 |
-|------|------|------|
-| **devdep.sh** | 系统基础依赖（build-essential、curl、wget 等） | 无（必须首先执行） |
-| **gvm.sh** | Go Version Manager | devdep.sh |
-| **rustup.sh** | Rust 工具链 | devdep.sh |
-| **nvm.sh** | Node Version Manager | 无 |
-| **uv.sh** | Python 包管理器 | 无 |
-| **dotnet.sh** | .NET SDK | 无 |
-| **sdkman.sh** | Java 工具链管理器 | 无 |
-
-### 自定义环境
-
-这种设计的优势在于：
-- ✅ **按需安装**：只安装项目真正需要的工具链
-- ✅ **版本灵活**：使用版本管理器，可以自由切换版本
-- ✅ **环境轻量**：避免预装所有工具导致的镜像膨胀
-- ✅ **更新及时**：随时可以安装最新版本
-
-**示例配置：**
-
-```bash
-# 对于 Go 项目
-bash ~/scripts/devdep.sh && bash ~/scripts/gvm.sh
-
-# 对于 Rust 项目
-bash ~/scripts/devdep.sh && bash ~/scripts/rustup.sh
-
-# 对于全栈项目
-bash ~/scripts/devdep.sh
+# === 后端开发 (Go) ===
 bash ~/scripts/gvm.sh
-bash ~/scripts/rustup.sh
-bash ~/scripts/nvm.sh
+
+echo "✅ 项目依赖安装完成"
 ```
 
-## 环境变量
+---
 
-容器预配置了以下环境变量：
-
-```bash
-# Go 代理
-GOPROXY=https://mirrors.aliyun.com/goproxy/,direct
-GO111MODULE=on
-
-# Rust 镜像
-RUSTUP_DIST_SERVER=https://rsproxy.cn
-RUSTUP_UPDATE_ROOT=https://rsproxy.cn/rustup
-
-# Node.js 镜像
-NVM_NODEJS_ORG_MIRROR=https://mirrors.ustc.edu.cn/npm/node-snapshot
-```
-
-## 默认用户
-
-- **用户名**：admin
-- **密码**：无（使用 SSH 密钥认证）
-- **权限**：sudo 免密
-- **Shell**：Zsh with Oh My Zsh
-
-> **⚠️ 安全性说明**
->
-> 此容器配置了免密 sudo 权限，旨在为本地开发和 CI/CD 环境提供便利。这种配置存在以下安全风险：
->
-> - **提权风险**：任何进程都可以无需密码即可获得 root 权限
-> - **不适用于生产环境**：切勿将此容器用于生产环境或对外暴露的服务
-> - **代码执行风险**：运行不受信任的代码时需格外谨慎
->
-> **建议的安全实践**：
-> - 仅在受控的开发环境中使用
-> - 不要在容器中存储或处理敏感数据
-> - 定期更新镜像以获取安全补丁
-> - 考虑在需要时移除免密 sudo 配置
-
-## 构建和发布
-
-### 本地构建
-
-```bash
-# AMD64 架构
-docker build -t devcontainer:latest .
-
-# 多架构构建
-docker buildx build --platform linux/amd64,linux/arm64 -t devcontainer:latest .
-```
-
-### 发布流程
-
-项目使用 GitHub Actions 自动构建和发布：
-
-- 推送到 `main` 分支：自动构建并打上 `latest` 标签
-- 推送版本标签：自动构建并打上对应版本标签
-- 镜像发布到：`ghcr.io/kyicy/devcontainer`
-
-## 技术栈
-
-- **基础镜像**：debian:trixie (testing)
-- **Shell**：Zsh + Oh My Zsh
-- **CI/CD**：GitHub Actions
-- **镜像仓库**：GitHub Container Registry
-
-## 许可证
-
-[MIT License](LICENSE)
-
-## 贡献
+## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！
+
+---
+
+## 📄 许可证
+
+[LICENSE](LICENSE)
