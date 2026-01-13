@@ -105,12 +105,17 @@ devinit init --name myproject \
 ├── devcontainer.json          # DevContainer 配置
 ├── docker-compose.yml         # Docker Compose 配置
 └── mapping/
-    ├── .cam/                  # Claude 配置映射
     ├── .claude/               # Claude 数据映射
     ├── devcontainer-dependencies  # 项目依赖安装脚本
     ├── post-create.sh         # 容器创建后执行脚本
     └── .zsh_history           # Zsh 历史记录映射
 ```
+
+> ⚠️ **重要提示**：生成的 `devcontainer.json` 中 `workspaceFolder` 固定为 `/home/admin`。**你必须根据实际项目需求手动修改此路径**，否则容器将无法正常工作。例如：
+> - Go 项目: `/home/admin/gopath/src/your-project`
+> - Node.js 项目: `/home/admin/node/your-project`
+> - Python 项目: `/home/admin/python/your-project`
+> - 或其他自定义路径
 
 #### 3. 管理配置
 
@@ -135,7 +140,6 @@ devinit config add-extension golang.go
 | 参数 | 简写 | 默认值 | 说明 |
 |------|------|--------|------|
 | `--name` | `-n` | *(必填)* | 项目名称 |
-| `--workspace` | `-w` | 从配置文件读取 | 工作目录 |
 | `--user` | `-u` | 从配置文件读取 | 容器用户 |
 | `--git-email` | - | 从配置文件读取 | Git 邮箱 |
 | `--git-user` | - | 从配置文件读取 | Git 用户名 |
@@ -263,7 +267,7 @@ devinit init \
   "name": "Project Dev Container",
   "dockerComposeFile": "docker-compose.yml",
   "service": "project_dev",
-  "workspaceFolder": "/home/admin/gopath/src/project",
+  "workspaceFolder": "/home/admin",
   "postCreateCommand": "bash $HOME/scripts/post-create.sh",
   "remoteUser": "admin",
   "customizations": {
@@ -273,6 +277,8 @@ devinit init \
   }
 }
 ```
+
+> ⚠️ **重要**：`workspaceFolder` 是必填项。默认值为 `/home/admin`，**你必须根据项目实际路径手动修改**，否则 DevContainer 将无法正常工作。
 
 ### docker-compose.yml
 
@@ -284,7 +290,7 @@ services:
     image: ghcr.io/kyicy/devcontainer:latest
     volumes:
       - project_code:/home/admin/gopath
-      - ./mapping/.cam:/home/admin/.cam
+      - ./mapping/.claude:/home/admin/.claude
       # ... 更多映射
 ```
 
@@ -302,7 +308,7 @@ echo "🔧 安装项目所需的开发环境..."
 bash ~/scripts/nvm.sh
 
 # === 后端开发 (Go) ===
-bash ~/scripts/gvm.sh
+# bash ~/scripts/gvm.sh
 
 echo "✅ 项目依赖安装完成"
 ```

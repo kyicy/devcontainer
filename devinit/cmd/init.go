@@ -9,14 +9,13 @@ import (
 )
 
 var (
-	projectName     string
-	workspaceFolder string
-	remoteUser      string
-	gitEmail        string
-	gitUser         string
-	githubToken     string
-	gitBranch       string
-	githubProxy     string
+	projectName string
+	remoteUser  string
+	gitEmail    string
+	gitUser     string
+	githubToken string
+	gitBranch   string
+	githubProxy string
 )
 
 var initCmd = &cobra.Command{
@@ -29,7 +28,6 @@ var initCmd = &cobra.Command{
 
 func init() {
 	initCmd.Flags().StringVarP(&projectName, "name", "n", "", "项目名称 (必填)")
-	initCmd.Flags().StringVarP(&workspaceFolder, "workspace", "w", "", "工作目录 (默认从配置文件读取)")
 	initCmd.Flags().StringVarP(&remoteUser, "user", "u", "", "容器用户 (默认从配置文件读取)")
 	initCmd.Flags().StringVar(&gitEmail, "git-email", "", "Git 邮箱 (默认从配置文件读取)")
 	initCmd.Flags().StringVar(&gitUser, "git-user", "", "Git 用户名 (默认从配置文件读取)")
@@ -61,9 +59,6 @@ func runInit(cmd *cobra.Command, args []string) error {
 	}
 
 	// 使用命令行参数覆盖配置文件中的值
-	if workspaceFolder == "" {
-		workspaceFolder = userConfig.Workspace
-	}
 	if remoteUser == "" {
 		remoteUser = userConfig.RemoteUser
 	}
@@ -89,15 +84,14 @@ func runInit(cmd *cobra.Command, args []string) error {
 	}
 
 	devConfig := &generator.DevContainerConfig{
-		ProjectName:     projectName,
-		DockerImage:     "ghcr.io/kyicy/devcontainer:latest",
-		WorkspaceFolder: workspaceFolder,
-		RemoteUser:      remoteUser,
-		GitEmail:        gitEmail,
-		GitUser:         gitUser,
-		GithubToken:     githubToken,
-		GitBranch:       gitBranch,
-		GithubProxy:     githubProxy,
+		ProjectName: projectName,
+		DockerImage: "ghcr.io/kyicy/devcontainer:latest",
+		RemoteUser:  remoteUser,
+		GitEmail:    gitEmail,
+		GitUser:     gitUser,
+		GithubToken: githubToken,
+		GitBranch:   gitBranch,
+		GithubProxy: githubProxy,
 	}
 
 	if err := generator.GenerateNonInteractive(projectPath, devConfig); err != nil {
@@ -108,12 +102,14 @@ func runInit(cmd *cobra.Command, args []string) error {
 	fmt.Println("\n📋 使用的配置:")
 	fmt.Printf("  项目名称: %s\n", projectName)
 	fmt.Printf("  Git 用户: %s <%s>\n", gitUser, gitEmail)
-	fmt.Printf("  工作目录: %s\n", workspaceFolder)
 	if githubToken != "" {
 		fmt.Println("  GitHub Token: *** (已设置)")
 	}
+	fmt.Println("\n⚠️  重要提示:")
+	fmt.Println("  workspaceFolder 已固定为 /home/admin")
+	fmt.Println("  你必须根据项目需求手动修改 .devcontainer/devcontainer.json 中的 workspaceFolder")
 	fmt.Println("\n下一步:")
-	fmt.Println("1. 检查配置文件: .devcontainer/devcontainer.json")
+	fmt.Println("1. 修改 workspaceFolder: .devcontainer/devcontainer.json")
 	fmt.Println("2. 根据需要调整: .devcontainer/docker-compose.yml")
 	fmt.Println("3. 在 VS Code 中重新打开容器")
 

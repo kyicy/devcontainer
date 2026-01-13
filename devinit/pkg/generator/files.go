@@ -9,9 +9,9 @@ import (
 // generateDevcontainerJSON 生成 devcontainer.json
 func generateDevcontainerJSON(path string, config *DevContainerConfig, serviceName string) error {
 	containerEnv := map[string]string{
-		"NODE_ENV":  "development",
-		"GIT_EMAIL": config.GitEmail,
-		"GIT_USER":  config.GitUser,
+		"NODE_ENV":   "development",
+		"GIT_EMAIL":  config.GitEmail,
+		"GIT_USER":   config.GitUser,
 		"GIT_BRANCH": config.GitBranch,
 	}
 
@@ -23,7 +23,7 @@ func generateDevcontainerJSON(path string, config *DevContainerConfig, serviceNa
 		Name:              config.ProjectName + " Dev Container",
 		DockerComposeFile: "docker-compose.yml",
 		Service:           serviceName,
-		WorkspaceFolder:   config.WorkspaceFolder + "/" + config.ProjectName,
+		WorkspaceFolder:   "/home/admin",
 		PostCreateCommand: "bash $HOME/scripts/post-create.sh",
 		ContainerEnv:      containerEnv,
 		RemoteUser:        config.RemoteUser,
@@ -40,7 +40,7 @@ func generateDevcontainerJSON(path string, config *DevContainerConfig, serviceNa
 	}
 
 	filePath := path + "/devcontainer.json"
-	if err := os.WriteFile(filePath, data, 0644); err != nil {
+	if err := os.WriteFile(filePath, data, 0o644); err != nil {
 		return fmt.Errorf("写入文件失败: %w", err)
 	}
 
@@ -57,7 +57,6 @@ func generateDockerCompose(path string, config *DevContainerConfig, serviceName 
     volumes:
       # 方案1: 使用命名的 volume（推荐）
       - %s_code:/home/admin/gopath
-      - ./mapping/.cam:/home/admin/.cam
       - ./mapping/.claude:/home/admin/.claude
       - ./mapping/devcontainer-dependencies:/home/admin/scripts/devcontainer-dependencies
       - ./mapping/.zsh_history:/home/admin/.zsh_history
@@ -71,7 +70,7 @@ volumes:
 `, serviceName, config.DockerImage, config.ProjectName, config.ProjectName)
 
 	filePath := path + "/docker-compose.yml"
-	if err := os.WriteFile(filePath, []byte(content), 0644); err != nil {
+	if err := os.WriteFile(filePath, []byte(content), 0o644); err != nil {
 		return fmt.Errorf("写入 docker-compose.yml 失败: %w", err)
 	}
 
@@ -87,8 +86,6 @@ set -e
 echo "🚀 开始配置开发环境..."
 
 sudo chown -R admin:admin /home/admin
-
-mkdir -p /home/admin/gopath/src
 
 # 配置 Git 用户信息
 git config --global user.email "$GIT_EMAIL"
@@ -122,11 +119,13 @@ if [ -f "$HOME/scripts/devcontainer-dependencies" ]; then
     source /$HOME/scripts/devcontainer-dependencies
 fi
 
+sudo chown -R admin:admin /home/admin
+
 echo "✅ 开发环境配置完成！"
 `
 
 	filePath := path + "/post-create.sh"
-	if err := os.WriteFile(filePath, []byte(content), 0755); err != nil {
+	if err := os.WriteFile(filePath, []byte(content), 0o755); err != nil {
 		return fmt.Errorf("写入 post-create.sh 失败: %w", err)
 	}
 
@@ -148,7 +147,7 @@ echo "🔧 安装项目所需的开发环境..."
 bash ~/scripts/nvm.sh
 
 # === 后端开发 (Go) ===
-bash ~/scripts/gvm.sh
+# bash ~/scripts/gvm.sh
 
 # === 后端开发 (Rust) ===
 # bash ~/scripts/rustup.sh
@@ -166,7 +165,7 @@ echo "✅ 项目依赖安装完成"
 `
 
 	filePath := path + "/devcontainer-dependencies"
-	if err := os.WriteFile(filePath, []byte(content), 0755); err != nil {
+	if err := os.WriteFile(filePath, []byte(content), 0o755); err != nil {
 		return fmt.Errorf("写入 devcontainer-dependencies 失败: %w", err)
 	}
 

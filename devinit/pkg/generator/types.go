@@ -2,16 +2,15 @@ package generator
 
 // DevContainerConfig 定义了 devcontainer 的配置
 type DevContainerConfig struct {
-	ProjectName     string
-	DockerImage     string
-	WorkspaceFolder string
-	RemoteUser      string
-	GitEmail        string
-	GitUser         string
-	GithubToken     string
-	GitBranch       string
-	GithubProxy     string
-	Extensions      []string
+	ProjectName string
+	DockerImage string
+	RemoteUser  string
+	GitEmail    string
+	GitUser     string
+	GithubToken string
+	GitBranch   string
+	GithubProxy string
+	Extensions  []string
 }
 
 // DevContainerJSON devcontainer.json 结构

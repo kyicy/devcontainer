@@ -28,9 +28,9 @@ type DockerComposeConfig struct {
 
 // ServiceConfig 表示 Docker 服务配置
 type ServiceConfig struct {
-	Image    string            `yaml:"image"`
-	Volumes  []string          `yaml:"volumes"`
-	Command  string            `yaml:"command"`
+	Image       string            `yaml:"image"`
+	Volumes     []string          `yaml:"volumes"`
+	Command     string            `yaml:"command"`
 	Environment map[string]string `yaml:"environment"`
 }
 

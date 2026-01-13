@@ -34,6 +34,18 @@ func generateFiles(projectPath string, config *DevContainerConfig) error {
 		return fmt.Errorf("创建 mapping 目录失败: %w", err)
 	}
 
+	// 创建空的 .zsh_history 文件
+	zshHistoryPath := mappingPath + "/.zsh_history"
+	if err := os.WriteFile(zshHistoryPath, []byte(""), 0644); err != nil {
+		return fmt.Errorf("创建 .zsh_history 文件失败: %w", err)
+	}
+
+	// 创建空的 .claude 文件夹
+	claudePath := mappingPath + "/.claude"
+	if err := os.MkdirAll(claudePath, 0755); err != nil {
+		return fmt.Errorf("创建 .claude 目录失败: %w", err)
+	}
+
 	// 生成 devcontainer.json
 	if err := generateDevcontainerJSON(devcontainerPath, config, serviceName); err != nil {
 		return err
