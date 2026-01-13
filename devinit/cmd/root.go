@@ -31,7 +31,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "配置文件 (默认为 $HOME/.devinit.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "配置文件 (默认为 $HOME/.devinit.json)")
 
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(configCmd)

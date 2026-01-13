@@ -38,7 +38,7 @@
 ### 构建镜像
 
 ```bash
-docker build -t ghcr.io/kyicy/devcontainer:latest .
+docker build -t ghcr.io/kyicy/devcontainer:latest -f docker/Dockerfile .
 ```
 
 ### 使用镜像
@@ -65,17 +65,37 @@ sudo mv devinit /usr/local/bin/
 
 ### 功能
 
-#### 1. 初始化项目
+#### 1. 设置用户配置 (首次使用)
 
 ```bash
-# 交互式模式
-devinit init
+# 交互式设置全局默认配置(只需一次)
+devinit config setup
+```
 
-# 非交互模式
+配置项包括:
+- Git 用户名
+- Git 邮箱
+- GitHub Token (可选)
+- Git 默认分支
+- GitHub 代理地址
+
+配置保存到 `~/.devinit.json`,之后所有项目都会使用这些默认值。
+
+#### 2. 初始化项目
+
+```bash
+# 使用默认配置快速初始化(只需指定项目名)
+devinit init --name myproject
+
+# 覆盖特定配置
+devinit init --name myproject --git-email "different@example.com"
+
+# 完整参数示例
 devinit init --name myproject \
-  --git-user "Your Name" \
-  --git-email "you@example.com" \
-  --non-interactive
+  --workspace /home/admin/gopath/src \
+  --user admin \
+  --git-branch main \
+  --github-proxy http://host.docker.internal:7890
 ```
 
 **生成的文件结构**：
@@ -92,10 +112,13 @@ devinit init --name myproject \
     └── .zsh_history           # Zsh 历史记录映射
 ```
 
-#### 2. 管理配置
+#### 3. 管理配置
 
 ```bash
-# 查看配置
+# 查看用户默认配置
+devinit config view-user
+
+# 查看项目配置
 devinit config view
 
 # 设置环境变量
@@ -111,15 +134,16 @@ devinit config add-extension golang.go
 
 | 参数 | 简写 | 默认值 | 说明 |
 |------|------|--------|------|
-| `--name` | `-n` | - | 项目名称 |
-| `--workspace` | `-w` | `/home/admin/gopath/src` | 工作目录 |
-| `--user` | `-u` | `admin` | 容器用户 |
-| `--git-email` | - | - | Git 邮箱 |
-| `--git-user` | - | - | Git 用户名 |
-| `--github-token` | - | - | GitHub Token |
-| `--git-branch` | - | `master` | Git 默认分支 |
-| `--github-proxy` | - | `http://host.docker.internal:7890` | GitHub 代理 |
-| `--non-interactive` | `-y` | `false` | 非交互模式 |
+| `--name` | `-n` | *(必填)* | 项目名称 |
+| `--workspace` | `-w` | 从配置文件读取 | 工作目录 |
+| `--user` | `-u` | 从配置文件读取 | 容器用户 |
+| `--git-email` | - | 从配置文件读取 | Git 邮箱 |
+| `--git-user` | - | 从配置文件读取 | Git 用户名 |
+| `--github-token` | - | 从配置文件读取 | GitHub Token |
+| `--git-branch` | - | 从配置文件读取 | Git 默认分支 |
+| `--github-proxy` | - | 从配置文件读取 | GitHub 代理 |
+
+> 💡 提示: 使用 `devinit config setup` 设置默认值,避免每次都输入相同的参数
 
 ---
 
@@ -127,17 +151,20 @@ devinit config add-extension golang.go
 
 ```
 .
-├── Dockerfile              # Docker 镜像定义
-├── aliyun.sources          # 阿里云 APT 源配置
-├── cargo.toml              # Cargo 国内镜像配置
-├── scripts/                # 开发工具安装脚本
-│   ├── nvm.sh             # Node.js (nvm) 安装
-│   ├── gvm.sh             # Go (gvm) 安装
-│   ├── rustup.sh          # Rust 安装
-│   ├── uv.sh              # Python (uv) 安装
-│   ├── dotnet.sh          # .NET 安装
-│   ├── sdkman.sh          # Java (SDKMAN) 安装
-│   └── devdep.sh          # 系统依赖安装
+├── docker/                 # Docker 镜像相关文件
+│   ├── Dockerfile          # Docker 镜像定义
+│   ├── aliyun.sources      # 阿里云 APT 源配置
+│   ├── cargo.toml          # Cargo 国内镜像配置
+│   ├── .dockerignore       # Docker 构建忽略文件
+│   ├── scripts/            # 开发工具安装脚本
+│   │   ├── nvm.sh         # Node.js (nvm) 安装
+│   │   ├── gvm.sh         # Go (gvm) 安装
+│   │   ├── rustup.sh      # Rust 安装
+│   │   ├── uv.sh          # Python (uv) 安装
+│   │   ├── dotnet.sh      # .NET 安装
+│   │   ├── sdkman.sh      # Java (SDKMAN) 安装
+│   │   └── devdep.sh      # 系统依赖安装
+│   └── README.md           # Docker 目录说明
 └── devinit/               # CLI 工具
     ├── main.go            # 入口文件
     ├── cmd/               # CLI 命令定义

@@ -6,6 +6,9 @@ on:
       - 'v*'  # Trigger on version tags
     branches:
       - main  # Trigger on pushes to the `main` branch
+    paths:
+      - 'docker/**'
+      - '.github/workflows/docker.yml'
   workflow_dispatch:
 jobs:
   build:

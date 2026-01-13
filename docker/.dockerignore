@@ -1,0 +1,20 @@
+# Git
+.git
+.gitignore
+.github
+
+# Documentation
+README.md
+LICENSE
+
+# Go files
+go.mod
+go.sum
+devinit
+
+# Claude
+.claude
+
+# Files not needed in docker image
+*.md
+!docker/README.md
