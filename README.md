@@ -92,7 +92,6 @@ devinit init --name myproject --git-email "different@example.com"
 
 # 完整参数示例
 devinit init --name myproject \
-  --workspace /home/admin/gopath/src \
   --user admin \
   --git-branch main \
   --github-proxy http://host.docker.internal:7890
