@@ -21,8 +21,13 @@ RUN useradd -ms /bin/bash admin && \
     usermod -aG sudo admin && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
+# Copy setup scripts before switching user
+RUN mkdir -p /var/scripts
+COPY docker/scripts /var/scripts
+RUN chown -R admin:admin /var/scripts && \
+    chmod -R +x /var/scripts/*.sh
+
 USER admin
-WORKDIR /home/admin
 
 # Set up development environment variables
 ENV SHELL=/usr/bin/zsh \
@@ -32,9 +37,5 @@ ENV SHELL=/usr/bin/zsh \
     GOPROXY="https://mirrors.aliyun.com/goproxy/,direct" \
     GVM_GO_BINARY_URL="https://mirrors.aliyun.com/golang/" \
     GVM_GO_SOURCE_URL="https://gitee.com/mirrors/go" \
-    PATH="$PATH:/home/admin/.dotnet:/home/admin/.dotnet/tools" \
+    PATH="$PATH:/var/scripts:/home/admin/.dotnet:/home/admin/.dotnet/tools" \
     DOTNET_ROOT="/home/admin/.dotnet"
-
-# Copy setup scripts (keep this at the end for better layer caching)
-RUN mkdir -p /var/scripts
-COPY docker/scripts /var/scripts
