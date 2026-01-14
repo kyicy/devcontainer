@@ -28,13 +28,23 @@ else
 fi
 
 # Configure GitHub proxy
-read -p "Enter GitHub proxy URL (press Enter to skip): " github_proxy
-if [ -n "$github_proxy" ]; then
-    echo "Configuring GitHub proxy to $github_proxy..."
-    git config --global http.https://github.com.proxy "$github_proxy"
-    echo "✓ GitHub proxy configured"
+if git config --global http.https://github.com.proxy > /dev/null 2>&1; then
+    echo "✓ GitHub proxy already configured"
+    echo "  Current proxy: $(git config --global http.https://github.com.proxy)"
+    echo "  Skipping GitHub proxy configuration."
 else
-    echo "⚠️  Skipping GitHub proxy configuration"
+    echo ""
+    echo "🌐 GitHub Proxy Configuration"
+    echo "=============================="
+    read -p "Enter GitHub proxy URL [default: http://host.docker.internal:7890] (press Enter to skip): " github_proxy
+    github_proxy=${github_proxy:-http://host.docker.internal:7890}
+    if [ -n "$github_proxy" ]; then
+        echo "Configuring GitHub proxy to $github_proxy..."
+        git config --global http.https://github.com.proxy "$github_proxy"
+        echo "✓ GitHub proxy configured"
+    else
+        echo "⚠️  Skipping GitHub proxy configuration"
+    fi
 fi
 
 # Configure GitHub authentication
@@ -65,19 +75,10 @@ else
                 git config --global credential.helper store
 
                 # Save token
-                echo "https://oauth2:${github_token}@github.com" > ~/.git-credentials
+                echo "https://${github_token}@github.com" > ~/.git-credentials
                 chmod 600 ~/.git-credentials
 
                 echo "✓ GitHub authentication configured"
-
-                # Test authentication
-                echo "🧪 Testing GitHub authentication..."
-                if git ls-remote https://github.com/ >/dev/null 2>&1; then
-                    echo "✓ GitHub authentication test successful"
-                else
-                    echo "⚠️  Warning: GitHub authentication test failed, please check your token"
-                    rm -f ~/.git-credentials
-                fi
                 break
             else
                 echo "❌ Token cannot be empty, please try again"
@@ -122,11 +123,34 @@ else
     echo "✓ oh-my-zsh installation completed"
 fi
 
-# Check if project has specific dependencies configuration
-if [ -f "$HOME/scripts/devcontainer-dependencies" ]; then
+# Configure proxy functions in .zshrc
+ZSHRC="$HOME/.zshrc"
+PROXY_MARKER="# Proxy functions - managed by devdep.sh"
+
+if grep -q "$PROXY_MARKER" "$ZSHRC" 2>/dev/null; then
+    echo "✓ Proxy functions already configured in .zshrc"
+    echo "  Skipping proxy functions configuration."
+else
     echo ""
-    echo "📋 Detected project dependencies configuration, installing..."
-    source "$HOME/scripts/devcontainer-dependencies"
+    echo "🔧 Adding proxy functions to .zshrc..."
+    cat >> "$ZSHRC" << 'EOF'
+
+# Proxy functions - managed by devdep.sh
+set_proxy() {
+    export https_proxy=http://host.docker.internal:7890 http_proxy=http://host.docker.internal:7890 all_proxy=socks5://host.docker.internal:7890
+    echo "✓ Proxy set: https_proxy=http://host.docker.internal:7890"
+}
+
+unset_proxy() {
+    unset https_proxy
+    unset http_proxy
+    unset all_proxy
+    echo "✓ Proxy unset"
+}
+EOF
+    echo "✓ Proxy functions added to .zshrc"
+    echo "  Usage: set_proxy    - enable proxy"
+    echo "        unset_proxy  - disable proxy"
 fi
 
 # Final ownership fix
@@ -135,12 +159,3 @@ sudo chown -R admin:admin /home/admin
 echo ""
 echo "✅ Development environment setup completed!"
 echo ""
-echo "Summary:"
-if git config --global user.email > /dev/null 2>&1; then
-    echo "  ✓ Git configured: $(git config --global user.name) <$(git config --global user.email)>"
-fi
-echo "  ✓ Base dependencies installed"
-echo "  ✓ oh-my-zsh installed"
-if [ -f "$HOME/scripts/devcontainer-dependencies" ]; then
-    echo "  ✓ Project dependencies installed"
-fi
