@@ -12,7 +12,7 @@ func GenerateNonInteractive(projectPath string, config *DevContainerConfig) erro
 	}
 
 	if len(config.Extensions) == 0 {
-		config.Extensions = []string{"golang.go", "eamodio.gitlens", "anthropic.claude-code"}
+		config.Extensions = []string{"anthropic.claude-code"}
 	}
 
 	return generateFiles(projectPath, config)
@@ -24,26 +24,8 @@ func generateFiles(projectPath string, config *DevContainerConfig) error {
 
 	// 创建 .devcontainer 目录
 	devcontainerPath := projectPath + "/.devcontainer"
-	if err := os.MkdirAll(devcontainerPath, 0755); err != nil {
+	if err := os.MkdirAll(devcontainerPath, 0o755); err != nil {
 		return fmt.Errorf("创建目录失败: %w", err)
-	}
-
-	// 创建 mapping 目录
-	mappingPath := devcontainerPath + "/mapping"
-	if err := os.MkdirAll(mappingPath, 0755); err != nil {
-		return fmt.Errorf("创建 mapping 目录失败: %w", err)
-	}
-
-	// 创建空的 .zsh_history 文件
-	zshHistoryPath := mappingPath + "/.zsh_history"
-	if err := os.WriteFile(zshHistoryPath, []byte(""), 0644); err != nil {
-		return fmt.Errorf("创建 .zsh_history 文件失败: %w", err)
-	}
-
-	// 创建空的 .claude 文件夹
-	claudePath := mappingPath + "/.claude"
-	if err := os.MkdirAll(claudePath, 0755); err != nil {
-		return fmt.Errorf("创建 .claude 目录失败: %w", err)
 	}
 
 	// 生成 devcontainer.json
@@ -53,16 +35,6 @@ func generateFiles(projectPath string, config *DevContainerConfig) error {
 
 	// 生成 docker-compose.yml
 	if err := generateDockerCompose(devcontainerPath, config, serviceName); err != nil {
-		return err
-	}
-
-	// 生成 post-create.sh
-	if err := generatePostCreateScript(mappingPath, config); err != nil {
-		return err
-	}
-
-	// 生成 devcontainer-dependencies
-	if err := generateDependenciesFile(mappingPath); err != nil {
 		return err
 	}
 

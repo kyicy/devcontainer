@@ -13,25 +13,10 @@ type DevContainerConfig struct {
 	DockerComposeFile string                 `json:"dockerComposeFile"`
 	Service           string                 `json:"service"`
 	WorkspaceFolder   string                 `json:"workspaceFolder"`
-	PostCreateCommand string                 `json:"postCreateCommand"`
 	ContainerEnv      map[string]string      `json:"containerEnv"`
 	RemoteUser        string                 `json:"remoteUser"`
 	Image             string                 `json:"image"`
 	Customizations    map[string]interface{} `json:"customizations"`
-}
-
-// DockerComposeConfig 表示 docker-compose.yml 的配置
-type DockerComposeConfig struct {
-	Services map[string]ServiceConfig `yaml:"services"`
-	Volumes  map[string]interface{}   `yaml:"volumes"`
-}
-
-// ServiceConfig 表示 Docker 服务配置
-type ServiceConfig struct {
-	Image       string            `yaml:"image"`
-	Volumes     []string          `yaml:"volumes"`
-	Command     string            `yaml:"command"`
-	Environment map[string]string `yaml:"environment"`
 }
 
 // LoadConfig 从项目目录加载配置

@@ -35,16 +35,6 @@ ENV SHELL=/usr/bin/zsh \
     PATH="$PATH:/home/admin/.dotnet:/home/admin/.dotnet/tools" \
     DOTNET_ROOT="/home/admin/.dotnet"
 
-# Install oh-my-zsh with shallow clone to reduce download size
-RUN git clone --depth 1 https://mirrors.tuna.tsinghua.edu.cn/git/ohmyzsh.git && \
-    cd ohmyzsh/tools && \
-    REMOTE=https://mirrors.tuna.tsinghua.edu.cn/git/ohmyzsh.git sh install.sh && \
-    cd /home/admin && \
-    rm -rf ohmyzsh
-
-# Install Rust configuration
-RUN mkdir -p /home/admin/.cargo
-COPY docker/cargo.toml /home/admin/.cargo/config.toml
-
 # Copy setup scripts (keep this at the end for better layer caching)
-COPY docker/scripts /home/admin/scripts
+RUN mkdir -p /var/scripts
+COPY docker/scripts /var/scripts

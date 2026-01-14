@@ -5,11 +5,6 @@ type DevContainerConfig struct {
 	ProjectName string
 	DockerImage string
 	RemoteUser  string
-	GitEmail    string
-	GitUser     string
-	GithubToken string
-	GitBranch   string
-	GithubProxy string
 	Extensions  []string
 }
 
@@ -19,7 +14,6 @@ type DevContainerJSON struct {
 	DockerComposeFile string                 `json:"dockerComposeFile"`
 	Service           string                 `json:"service"`
 	WorkspaceFolder   string                 `json:"workspaceFolder"`
-	PostCreateCommand string                 `json:"postCreateCommand"`
 	ContainerEnv      map[string]string      `json:"containerEnv"`
 	RemoteUser        string                 `json:"remoteUser"`
 	Customizations    map[string]interface{} `json:"customizations"`
