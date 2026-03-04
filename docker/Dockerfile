@@ -12,6 +12,7 @@ RUN apt-get update && \
         apt-transport-https \
         ca-certificates \
         git \
+        curl \
         zsh \
         sudo && \
     rm -rf /var/lib/apt/lists/*
@@ -29,6 +30,8 @@ RUN chown -R admin:admin /var/scripts && \
 
 USER admin
 
+RUN curl https://mise.run | sh
+
 # Set up development environment variables
 ENV SHELL=/usr/bin/zsh \
     NVM_NODEJS_ORG_MIRROR="https://mirrors.ustc.edu.cn/node" \
@@ -39,3 +42,4 @@ ENV SHELL=/usr/bin/zsh \
     GVM_GO_SOURCE_URL="https://gitee.com/mirrors/go" \
     PATH="$PATH:/var/scripts:/home/admin/.dotnet:/home/admin/.dotnet/tools" \
     DOTNET_ROOT="/home/admin/.dotnet"
+
