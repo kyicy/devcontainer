@@ -71,11 +71,11 @@ fi
 
 # Configure proxy functions in .zshrc
 MISE_MARKER="# mise - managed by devdep.sh"
-if ! grep -q "$MISE_MARKER" "$ZSHRC" 2>/dev/null; then
+if grep -q "$MISE_MARKER" "$ZSHRC" 2>/dev/null; then
+    echo "  Skipping mise configuration."
 else
-    
     cat >> "$ZSHRC" << 'EOF'
-
+    
 # mise - managed by devdep.sh
 eval "$(/home/admin/.local/bin/mise activate zsh)"
 alias x="mise x --"
