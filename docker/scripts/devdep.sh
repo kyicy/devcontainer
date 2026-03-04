@@ -46,6 +46,7 @@ if grep -q "$PROXY_MARKER" "$ZSHRC" 2>/dev/null; then
     echo "✓ Proxy functions already configured in .zshrc"
     echo "  Skipping proxy functions configuration."
 else
+    curl https://mise.run | sh
     echo ""
     echo "🔧 Adding proxy functions to .zshrc..."
     cat >> "$ZSHRC" << 'EOF'
@@ -75,7 +76,7 @@ if grep -q "$MISE_MARKER" "$ZSHRC" 2>/dev/null; then
     echo "  Skipping mise configuration."
 else
     cat >> "$ZSHRC" << 'EOF'
-    
+
 # mise - managed by devdep.sh
 eval "$(/home/admin/.local/bin/mise activate zsh)"
 alias x="mise x --"

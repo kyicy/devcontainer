@@ -30,8 +30,6 @@ RUN chown -R admin:admin /var/scripts && \
 
 USER admin
 
-RUN curl https://mise.run | sh
-
 # Set up development environment variables
 ENV SHELL=/usr/bin/zsh \
     NVM_NODEJS_ORG_MIRROR="https://mirrors.ustc.edu.cn/node" \
