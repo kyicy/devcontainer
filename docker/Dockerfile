@@ -31,13 +31,5 @@ RUN chown -R admin:admin /var/scripts && \
 USER admin
 
 # Set up development environment variables
-ENV SHELL=/usr/bin/zsh \
-    NVM_NODEJS_ORG_MIRROR="https://mirrors.ustc.edu.cn/node" \
-    RUSTUP_DIST_SERVER="https://rsproxy.cn" \
-    RUSTUP_UPDATE_ROOT="https://rsproxy.cn/rustup" \
-    GOPROXY="https://mirrors.aliyun.com/goproxy/,direct" \
-    GVM_GO_BINARY_URL="https://mirrors.aliyun.com/golang/" \
-    GVM_GO_SOURCE_URL="https://gitee.com/mirrors/go" \
-    PATH="$PATH:/var/scripts:/home/admin/.dotnet:/home/admin/.dotnet/tools" \
-    DOTNET_ROOT="/home/admin/.dotnet"
+ENV SHELL=/usr/bin/zsh
 

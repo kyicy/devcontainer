@@ -12,14 +12,7 @@ echo ""
 echo "📦 Installing base development dependencies..."
 sudo apt-get update
 
-sudo apt-get install -y -q --no-install-recommends \
-    build-essential \
-    mercurial make binutils bison gcc bsdmainutils \
-    libssl-dev \
-    wget \
-    zip unzip \
-    tar \
-    libicu-dev
+sudo apt-get install -y -q --no-install-recommends build-essential make curl
 
 echo "✓ Base development dependencies installed"
 
@@ -46,7 +39,6 @@ if grep -q "$PROXY_MARKER" "$ZSHRC" 2>/dev/null; then
     echo "✓ Proxy functions already configured in .zshrc"
     echo "  Skipping proxy functions configuration."
 else
-    curl https://mise.run | sh
     echo ""
     echo "🔧 Adding proxy functions to .zshrc..."
     cat >> "$ZSHRC" << 'EOF'
@@ -70,11 +62,30 @@ EOF
 fi
 
 
-# Configure proxy functions in .zshrc
+# Configure development proxy environment variables in .zshrc
+DEV_PROXY_MARKER="# Development proxy environment variables - managed by devdep.sh"
+if grep -q "$DEV_PROXY_MARKER" "$ZSHRC" 2>/dev/null; then
+    echo "✓ Development proxy environment variables already configured in .zshrc"
+    echo "  Skipping development proxy configuration."
+else
+    echo ""
+    echo "🔧 Adding development proxy environment variables to .zshrc..."
+    cat >> "$ZSHRC" << 'EOF'
+
+# Development proxy environment variables - managed by devdep.sh
+export RUSTUP_DIST_SERVER="https://rsproxy.cn"
+export RUSTUP_UPDATE_ROOT="https://rsproxy.cn/rustup"
+export GOPROXY="https://mirrors.aliyun.com/goproxy/,direct"
+EOF
+    echo "✓ Development proxy environment variables added to .zshrc"
+fi
+
+# Configure mise in .zshrc
 MISE_MARKER="# mise - managed by devdep.sh"
 if grep -q "$MISE_MARKER" "$ZSHRC" 2>/dev/null; then
     echo "  Skipping mise configuration."
 else
+    curl https://mise.run | sh
     cat >> "$ZSHRC" << 'EOF'
 
 # mise - managed by devdep.sh
