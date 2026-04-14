@@ -11,9 +11,7 @@ RUN apt-get update && \
     apt-get install -y -q --no-install-recommends \
         apt-transport-https \
         ca-certificates \
-        git \
-        curl \
-        zsh \
+        git curl zsh netcat-openbsd openssh-client\
         sudo && \
     rm -rf /var/lib/apt/lists/*
 
