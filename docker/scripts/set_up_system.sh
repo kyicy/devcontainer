@@ -8,13 +8,9 @@ echo "📦 Installing base development dependencies..."
 sudo apt-get update
 
 sudo apt-get install -y -q \
-    # Build tools
     build-essential cmake make git \
-    # CLI utilities
     fzf fd-find jq curl wget zsh \
-    # System & Security
     apt-transport-https ca-certificates \
-    # Network tools
     netcat-openbsd openssh-client
 
 echo "✓ Base development dependencies installed"
