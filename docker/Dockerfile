@@ -8,8 +8,7 @@ COPY docker/aliyun.sources /etc/apt/sources.list.d/aliyun.sources
 
 # Install base dependencies
 RUN apt-get update  \
-    && apt-get -y install  \
-        sudo curl apt-transport-https git ca-certificates build-essential \
+    && apt-get install -y -q --no-install-recommends sudo \
     && rm -rf /var/lib/apt/lists/*
 
 # Create admin user with sudo privileges (no password required)
@@ -24,3 +23,5 @@ RUN chown -R admin:admin /var/scripts && \
     chmod -R +x /var/scripts/*.sh
 
 USER admin
+
+CMD ["sleep", "infinity"]
