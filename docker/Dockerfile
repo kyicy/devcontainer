@@ -7,13 +7,10 @@ RUN mv /etc/apt/sources.list.d/debian.sources /etc/apt/sources.list.d/debian.sou
 COPY docker/aliyun.sources /etc/apt/sources.list.d/aliyun.sources
 
 # Install base dependencies
-RUN apt-get update && \
-    apt-get install -y -q --no-install-recommends \
-        apt-transport-https \
-        ca-certificates \
-        git curl zsh netcat-openbsd openssh-client\
-        sudo && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update  \
+    && apt-get -y install  \
+        sudo curl apt-transport-https git ca-certificates build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create admin user with sudo privileges (no password required)
 RUN useradd -ms /bin/bash admin && \
@@ -27,7 +24,3 @@ RUN chown -R admin:admin /var/scripts && \
     chmod -R +x /var/scripts/*.sh
 
 USER admin
-
-# Set up development environment variables
-ENV SHELL=/usr/bin/zsh
-

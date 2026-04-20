@@ -7,30 +7,6 @@ echo "🚀 Starting development environment setup..."
 # Fix ownership of /home/admin directory
 sudo chown -R admin:admin /home/admin
 
-# Install base development dependencies
-echo ""
-echo "📦 Installing base development dependencies..."
-sudo apt-get update
-
-sudo apt-get install -y -q --no-install-recommends build-essential make curl
-
-echo "✓ Base development dependencies installed"
-
-# Install oh-my-zsh with shallow clone to reduce download size
-if [ -d "$HOME/.oh-my-zsh" ]; then
-    echo "✓ oh-my-zsh is already installed at $HOME/.oh-my-zsh"
-    echo "  Skipping oh-my-zsh installation."
-else
-    echo "Installing oh-my-zsh..."
-    cd /home/admin
-    git clone --depth 1 https://mirrors.tuna.tsinghua.edu.cn/git/ohmyzsh.git && \
-        cd ohmyzsh/tools && \
-        REMOTE=https://mirrors.tuna.tsinghua.edu.cn/git/ohmyzsh.git sh install.sh && \
-        cd /home/admin && \
-        rm -rf ohmyzsh
-    echo "✓ oh-my-zsh installation completed"
-fi
-
 # Configure proxy functions in .zshrc
 ZSHRC="$HOME/.zshrc"
 PROXY_MARKER="# Proxy functions - managed by devdep.sh"
@@ -93,6 +69,66 @@ eval "$(/home/admin/.local/bin/mise activate zsh)"
 alias x="mise x --"
 
 EOF
+fi
+
+# Check if Rust is already installed
+if command -v rustc &> /dev/null && command -v cargo &> /dev/null; then
+    echo "✓ Rust is already installed (rustc version: $(rustc --version))"
+    echo "  Skipping Rust installation."
+else
+    echo "Installing Rust via rustup..."
+    curl --proto '=https' --tlsv1.2 -sSf https://rsproxy.cn/rustup-init.sh | sh
+    echo "✓ Rust installation completed"
+fi
+
+# Configure Cargo to use Chinese mirrors
+CARGO_CONFIG="$HOME/.cargo/config.toml"
+if [ -f "$CARGO_CONFIG" ]; then
+    echo "✓ Cargo config already exists at $CARGO_CONFIG"
+    echo "  Skipping Cargo configuration."
+else
+    echo "Configuring Cargo to use Chinese mirrors..."
+    mkdir -p $HOME/.cargo
+    cat > "$CARGO_CONFIG" << 'EOF'
+[source.crates-io]
+replace-with = 'rsproxy-sparse'
+[source.rsproxy]
+registry = "https://rsproxy.cn/crates.io-index"
+[source.rsproxy-sparse]
+registry = "sparse+https://rsproxy.cn/index/"
+[registries.rsproxy]
+index = "https://rsproxy.cn/crates.io-index"
+[net]
+git-fetch-with-cli = true
+EOF
+    echo "✓ Cargo configuration completed"
+fi
+
+
+# Check if uv is already installed
+if command -v uv &> /dev/null; then
+    echo "✓ uv is already installed (uv version: $(uv --version))"
+    echo "  Skipping uv installation."
+else
+    echo "Installing uv (Python package manager)..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    echo "✓ uv installation completed"
+fi
+
+# Configure uv to use USTC mirror
+UV_CONFIG="$HOME/.config/uv/uv.toml"
+if [ -f "$UV_CONFIG" ]; then
+    echo "✓ uv config already exists at $UV_CONFIG"
+    echo "  Skipping uv configuration."
+else
+    echo "Configuring uv to use USTC mirror..."
+    mkdir -p $HOME/.config/uv
+    cat > "$UV_CONFIG" << 'EOF'
+[[index]]
+url = "https://mirrors.ustc.edu.cn/pypi/simple"
+default = true
+EOF
+    echo "✓ uv configuration completed"
 fi
 
 
