@@ -17,7 +17,7 @@ sudo apt-get update
 
 sudo apt-get install -y -q \
     build-essential cmake make git \
-    fzf fd-find jq curl wget \
+    fzf fd-find jq wget \
     apt-transport-https ca-certificates \
     netcat-openbsd openssh-client
 

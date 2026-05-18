@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install base dependencies
 RUN apt-get update  \
-    && apt-get install -y -q --no-install-recommends sudo zsh \
+    && apt-get install -y -q --no-install-recommends sudo zsh curl git \
     && rm -rf /var/lib/apt/lists/*
 
 # Create admin user with sudo privileges (no password required)
