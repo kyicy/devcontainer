@@ -6,7 +6,7 @@ echo "🚀 Starting development environment setup..."
 
 sudo chown -R admin:admin /home/admin
 
-curl https://chsrc.run/posix | bash
+curl https://chsrc.run/posix | sudo bash
 
 sudo chsrc set debian
 
