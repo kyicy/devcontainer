@@ -1,18 +1,14 @@
-FROM debian:trixie
+FROM debian:latest
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Use Aliyun mirror for faster downloads in China
-RUN mv /etc/apt/sources.list.d/debian.sources /etc/apt/sources.list.d/debian.sources.bak
-COPY docker/aliyun.sources /etc/apt/sources.list.d/aliyun.sources
-
 # Install base dependencies
 RUN apt-get update  \
-    && apt-get install -y -q --no-install-recommends sudo \
+    && apt-get install -y -q --no-install-recommends sudo zsh \
     && rm -rf /var/lib/apt/lists/*
 
 # Create admin user with sudo privileges (no password required)
-RUN useradd -ms /bin/bash admin && \
+RUN useradd -ms /bin/zsh admin && \
     usermod -aG sudo admin && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
